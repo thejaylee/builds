@@ -1,0 +1,87 @@
+DuoTrace v0.1b
+By: Jason Lee
+
+-=About=-
+
+This is just a simple trace route program for WinNT5 based platforms. I got sick of the included
+tracert utility so I wrote my own. It uses standard winsock2 calls, and builds datagrams from
+the packet (IP) level.
+
+There's no significant argument validation, so entering stupid values will probably crash.
+
+-=Program Usage=-
+
+Usage: DuoTrace [options] <host>
+
+Options:
+    -a               display average time
+                     Displays the average response time for each hop after all the tracers
+                     
+    -A               condensed average only format
+                     Will display each tracer as either a . (successfull) or * (timeout/error)
+                     and then an average time for the hop at the end. This option is usefull
+                     for when a large number of packets are sent to save screen space.
+                     
+    -h precision     decimal display precision for times (default: 3)
+    
+    -H               disable high resolution timing
+                     By default the high resolution timing call QueryPerformanceCounter() is
+                     used which provides very precise timing, but may have issues on some
+                     multi-cpu and/or throttled processors. Using this switch uses the
+                     GetTickCount() call, which is stable, but only has a resolution of ~15ms.
+    
+    -r               resolve hostnames
+                     Resolves the hostnames for each hop. On systems >Win2k getnameinfo() is used
+                     which uses DNS and is quite fast. Otherwise gethostbyaddr() is used, which
+                     can take quite long, especially for ips with no reverse DNS.
+                     
+    -t ttl           initial TTL  (default: 1)
+                     Initial IP Time To Live for the trace route.
+                     
+    -w timeout       time in ms to wait for replies  (default: 750ms)
+                     A * indicates a tracer that has timed out.
+                     
+    -W hops          max consecutive failed hops  (default: 3)
+                     The maximum number of consecutive failed hops before the traceroute stops.
+                     
+    -f delay         antiflood time in ms between tracers (default: 250ms)
+                     Time to wait between tracers to prevent packet flooding.
+    
+    -n count         tracers per hop  (default: 3)
+                     The number of tracers to send for each hop along the route.
+                     
+    -s size          payload size in bytes  (default: 32)
+                     The payload size to send in the tracers. For those who really want to know
+                     the payload is just filled with lower case repeating alphabet.
+    
+    -u [port]        use UDP packets instead of ICMP.
+                     Port parameter is optional (default port: 7)
+                     
+
+preset switches:
+The preset switches are synonyms for already existing switches with parameters.
+preset switches may also be used together (ie. --stat --faster)
+    --fast       -f 100 -w 350
+    --faster     -f 50 -w 250
+    --fastest    -f 0 -w 150
+    --stat       -h 5 -n 25 -A
+    --route      -r -n 1 -s 4 -f 0
+
+
+-=Usage Notes=-
+
+switches are parsed in the order they are read, so overloading may be done.
+For example: specifying "--faster --stat -n 10" will use 10 tracers per hop instead of the 25
+set with --stat.
+
+A ? indicates the packet was returned with ICMP Destination Unreachable.
+
+When tracing with UDP, a ! after the tracer time indicates that the packet was returned with
+either an ICMP destination port unreachable or destination protocol unreachable. This will only
+ever be displayed from the last hop of the route as only the destination host is allowed to
+return such an ICMP.
+
+-=Known Issues=-
+
+There are some issues with usage on computers with multiple NICs, or, VPN(s). Sometimes it will
+try to use the incorrect interface for the route and return desination unreachable.

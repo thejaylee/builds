@@ -1,0 +1,73 @@
+Ding v0.1b
+By: Jason Lee
+
+-=About=-
+
+This is a ping program written for NT5 based platforms. The standard windows one started to
+annoy me, so I wrote my own. It uses standard winsock2 calls, and builds datagrams from
+the packet (IP) level.
+
+There's no significant argument validation, so entering stupid values will probably crash.
+
+-=Program Usage=-
+
+Usage: Ding [options] <host>
+
+Options:                     
+    -h precision   decimal display precision for times (default: 3)
+    
+    -H             disable high resolution timing
+                   By default the high resolution timing call QueryPerformanceCounter() is
+                   used which provides very precise timing, but may have issues on some
+                   multi-cpu and/or throttled processors. Using this switch uses the
+                   GetTickCount() call, which is stable, but only has a resolution of ~15ms.
+                   
+    -t ttl         Time To Live (default: 64)
+                   IP time to live to set for datagrams.
+
+    -S sqnc        initial 16bit ICMP sequence number  (default: 0)
+
+    -i id          16bit identification to use for ICMP  (default: 57005)
+                   
+    -w timeout     time in ms to wait for replies  (default: 750ms)
+                   
+    -f delay       antiflood time in ms between queries  (default: 250ms)
+                   Time to wait between queries to prevent packet flooding.
+    
+    -n count       number of queires to send  (default: 5)
+                   A value of 0 will ping continuosly.
+                   The number of queries to send.
+                   
+    -s size        payload size in bytes  (default: 32)
+                   The payload size to send in the tracers. For those who really want to know
+                   the payload is just filled with lower case repeating alphabet.
+
+    -q             run in quiet mode
+                   Only prints the statistics line. Useful to have a condensed display when
+                   sending many pings.
+
+    -d             run in diagnostic mode (ignores -s)
+                   Diagnostic mode pings a host with 4, 16, 64, 256 then 1024 byte payloads.
+                   It is recommened to use this in conjuction with quiet mode, especially when
+                   sending many packets.
+                     
+                     
+
+preset switches:
+The preset switches are synonyms for already existing switches with parameters.
+preset switches may also be used together (ie. --stat --faster)
+    --fast       -f 100 -w 350
+    --faster     -f 50 -w 250
+    --fastest    -f 0 -w 150
+    --stat       -d -q -n 25
+    --mon        -f 1000 -q -n 0
+    
+-=Usage Notes=-
+
+switches are parsed in the order they are read, so overloading may be done.
+For example: specifying "--faster --stat -n 10" will use 10 pings of the 25 set with --stat.
+
+-=Known Issues=-
+
+There are some issues with usage on computers with multiple NICs, or, VPN(s). Sometimes it will
+try to use the incorrect interface for the route and return desination unreachable.

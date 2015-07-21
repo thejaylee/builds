@@ -1,0 +1,55 @@
+PacketVis
+Jason Lee 2010
+
+DESCRIPTION
+===========
+PacketVis is a simple 3D real-time network packet visualizer, not much more to
+say :) It can show some basic network and program statistics, but nothing very
+verbose just yet.
+
+PacketVis represents all data in a 3D cubic space. Network enpoints and packets
+are represented by a grey cross and 3D balls respectively. The endpoint's XYZ
+coordinates are determined by IP and Port as follows:
+X - IP high order 16 bits
+Z - IP low order 16 bits
+Y - logarithm of port (midpoint for ICMP)
+
+The size and gravity of a ball is proportional to the byte size of the
+corresponding packet. Colors of the balls are as follows:
+Blue  - TCP
+Green - UDP
+Red   - ICMP
+
+
+INSTALLATION
+============
+No installation is neccessary for PacketVis, but there are dependancies.
+
+PacketVis uses WinPCap and SDL. It has been compiled against WinPCap v4.1.2 and
+SDL v1.2. SDL.DLL is included and should be all that is required for SDL.
+
+http://libsdl.org
+http://winpcap.org
+
+
+USAGE
+=====
+PacketVis requires three commandline arguments to run
+
+PacketVis.exe <devnum> <width> <height>
+Where:
+devnum  is the device number (acquired with listdevs.exe)
+width   is the x resolution for rendering
+height  is the y resolution for rendering
+
+Mouse and key bindings are provided for interactivity and toggling of options.
+
+Mouse:
+left click + drag - change orientation
+wheel - zoom in/out
+
+Keys:
+R - toggle autorotate
+S - toggle statistics
+P - toggle projection of crosses onto the walls of the cube
+L - toggle dashed lines between endpoints and wall crosses
